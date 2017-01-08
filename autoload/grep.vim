@@ -2,7 +2,7 @@
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.2
 " Last Modified: May 27, 2018
-" 
+"
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
 " ripgrep, git grep, sift, platinum searcher and universal code grep.
@@ -638,7 +638,7 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
 endfunction
 
 " getListOfBufferNames()
-" Get the file names of all the listed and valid buffer names 
+" Get the file names of all the listed and valid buffer names
 function! s:getListOfBufferNames()
     let filenames = ''
 
@@ -688,7 +688,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     let [opts, pattern, filenames] = s:parseArgs(a:grep_cmd, a:000)
 
     " No argument supplied. Get the identifier and file list from user
-    if pattern == '' 
+    if pattern == ''
 	let pattern = input('Search for pattern: ', expand('<cword>'))
 	if pattern == ''
 	    return
@@ -697,14 +697,19 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 	echo "\r"
     endif
 
-    let cwd = getcwd()
+    let shellslash_save = &shellslash
     if g:Grep_Cygwin_Find == 1
-	let cwd = substitute(cwd, "\\", "/", 'g')
+      set shellslash
     endif
+    let cwd = getcwd()
     let startdir = input('Start searching from directory: ', cwd, 'dir')
     if startdir == ''
 	return
     endif
+    if has("unix") || &shellslash
+      let startdir = substitute(startdir, "\\", "", "g")
+    endif
+    let &shellslash = shellslash_save
     echo "\r"
 
     if !isdirectory(startdir)
@@ -726,7 +731,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     endif
 
     if filenames == ''
-	let filenames = input('Search in files matching pattern: ', 
+	let filenames = input('Search in files matching pattern: ',
 		    \ g:Grep_Default_Filelist)
 	if filenames == ''
 	    return
@@ -861,7 +866,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
     let [opts, pattern, filenames] = s:parseArgs(a:grep_cmd, a:000)
 
     " Get the identifier and file list from user
-    if pattern == '' 
+    if pattern == ''
 	let pattern = input('Search for pattern: ', expand('<cword>'))
 	if pattern == ''
 	    return
